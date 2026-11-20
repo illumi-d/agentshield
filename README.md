@@ -37,8 +37,11 @@ Deploy scripts (broadcasting requires the operator's own key at run time — nev
 - BSC testnet (deploys the mock + registry): `script/DeployTestnet.s.sol`
 - BSC mainnet (registry wired to the real Agent ID contract): `script/DeployMainnet.s.sol`
 
+## Frontend
+Static Vite + React + wagmi/viem site in `web/` — three pages (Home & Registration with a mandatory transaction preview before signing, My Dashboard, Developers). Testnet mode is fully wired to the deployed contracts below, including a Mock Agent ID mint for testing; mainnet mode shows the real Agent ID contract and unlocks when the mainnet registry is deployed. See `web/README.md`.
+
 ## Status
-Spec v2.1 (see `AgentShield-MVP-Spec.md` in the project records) · D0 verification complete (Agent ID contract interface, tokenId derivation, and the deployer's own holding all proven with read-only on-chain calls) · contracts compile, 21/21 tests pass · not yet deployed.
+Spec v2.1 · D0 verification complete · contracts compile, 21/21 tests pass · **deployed on BSC testnet** (MockAgentID `0x00dC11c02780d8309aBc807a06828D3d0dB08268`, registry `0x98E48DAFdce825B7835939A59035e0C81aE7b7D9`; on-chain smoke test passed, Shield Score 88) · frontend builds and previews cleanly · mainnet deploy planned 2026-11-29.
 
 ## License
 MIT
