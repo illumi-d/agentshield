@@ -1,6 +1,13 @@
 # AgentShield — Panduan Deploy BSC Testnet
 
-Status persiapan: **SIAP BROADCAST, menunggu tBNB.** Semua langkah di bawah sudah dibuktikan kecuali broadcast ke testnet asli.
+Status: **SUDAH TER-DEPLOY DI BSC TESTNET (21 Nov 2026, ~02:00 WIB)** — lihat bagian "Hasil deploy" di bawah. Panduan persiapan asli dipertahankan setelahnya sebagai catatan proses.
+
+## Hasil deploy (terverifikasi ulang via RPC terpisah)
+- MockAgentID: `0x00dC11c02780d8309aBc807a06828D3d0dB08268` — tx `0x36e28fbf0262c4ae122c1481e90200810c22e0877095a25e7bf649ea08128b9a`
+- AgentShieldRegistry: `0x98E48DAFdce825B7835939A59035e0C81aE7b7D9` — tx `0x3e257357ebfa9c16e17f3c1cb9abc28e1c229209242e2cb33960bcb9239fe3e8`
+- Explorer: https://testnet.bscscan.com/address/0x98E48DAFdce825B7835939A59035e0C81aE7b7D9
+- Smoke test on-chain di testnet: mint tx `0x4e2b80…294f2`, setPolicy tx `0x6225bb…2d0fa`, checkIn tx `0x402c45…0acc` → `totalRegistered 1`, `totalCheckIns 1`, Shield Score deployer **88**, badgeTier 1, isActive true.
+- Biaya total (2 deploy + 3 smoke): ±0,000207 tBNB. Sisa deployer: ±0,00979 tBNB.
 
 ## Yang sudah terbukti (21 Nov 2026)
 - Unit test: **21/21 lulus** (`forge test`).
