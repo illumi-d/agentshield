@@ -34,3 +34,7 @@ Status: **SUDAH TER-DEPLOY DI BSC TESTNET (21 Nov 2026, ~02:00 WIB)** — lihat 
 ## Catatan keamanan
 - Semua ini **testnet** (chainId 97). Script mainnet (`DeployMainnet.s.sol`) terpisah dan **tidak** dijalankan dari panduan ini; deploy mainnet butuh konfirmasi eksplisit baru, review alamat & argumen konstruktor, sesuai safety rails.
 - Jangan pernah menempel private key wallet utama ke chat, file proyek, atau repo — untuk mainnet nanti deployer-nya adalah wallet izzy sendiri lewat signer miliknya.
+
+## Verifikasi sumber (Sourcify) — 21 Nov 2026
+- Kedua kontrak testnet terverifikasi di Sourcify dengan **exact_match** (creation + runtime): Registry `0x98E48DAFdce825B7835939A59035e0C81aE7b7D9` (verifiedAt 2026-11-20T19:58:01Z) dan MockAgentID `0x00dC11c02780d8309aBc807a06828D3d0dB08268` (19:58:52Z), via `forge verify-contract --verifier sourcify` (tanpa API key).
+- Catatan API key BscScan/Etherscan: key milik owner tersimpan di `.env` (`ETHERSCAN_API_KEY`, tidak pernah ditampilkan), tetapi API V2 gratis Etherscan tidak mencakup chain BSC (56/97) — endpoint V1 BscScan sudah deprecated. Jalur verifikasi mainnet 29 Nov: Sourcify (terbukti di sini) + verifikasi manual via web UI BscScan sebagai cadangan. Skrip pemeriksa: `check-etherscan-key.js`, `check-bscscan-key.js`.
