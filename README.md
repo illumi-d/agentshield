@@ -3,6 +3,8 @@
 **An on-chain security-policy registry for Agent ID holders on BNB Chain.**
 Built for the Agent ID Hackathon (Binance Wallet × BNB Chain).
 
+**Live site:** https://agentshield-three-blush.vercel.app · **Repository:** https://github.com/illumi-d/agentshield
+
 An agent registers the safety rules it operates under — always requiring manual user confirmation, never using unlimited token approvals, simulating before signing, plus a maximum transaction value — bound to its Agent ID identity. Holders prove their agent is active and still under their control through periodic on-chain check-ins that build a streak and a badge tier. These signals combine into a public **Shield Score** that any dApp can read before interacting with an agent.
 
 ## Why Agent ID is core, not a gate
