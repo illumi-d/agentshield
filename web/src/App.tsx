@@ -151,6 +151,49 @@ function PolicyForm(props: {
   );
 }
 
+// Agent path card: Agentic Wallet holders cannot connect that wallet to a
+// third-party dApp browser (D0-2 finding) — their agent calls the two
+// registry functions directly. This card gives them a copy-paste prompt.
+function AgentPathCard(props: { net: (typeof NETWORKS)[NetworkKey] }) {
+  const { net } = props;
+  const [copied, setCopied] = useState(false);
+  if (!net.registry) return null;
+  const prompt = `Register my Agent ID on AgentShield, then check in:
+1) My Agent ID tokenId = uint256(keccak256("<MY_NAME>")), where <MY_NAME> is my Agent ID name without the .ai suffix.
+${net.agentIdIsMock ? `2) On BSC Testnet (chainId 97), if I do not hold a Mock Agent ID yet, first call mint(<MY_ADDRESS>, <TOKEN_ID>) on the MockAgentID contract ${net.agentId}.
+3) Then call setPolicy(7, 100000000000000000, <TOKEN_ID>) on the AgentShieldRegistry contract ${net.registry}.` : `2) On BNB Chain (chainId 56), call setPolicy(7, 100000000000000000, <TOKEN_ID>) on the AgentShieldRegistry contract ${net.registry}.`}
+${net.agentIdIsMock ? "4" : "3"}) Then call checkIn() on the same registry contract.
+Rules: the registry calls are value-0 and need no token approvals. Show me a preview of each transaction and wait for my confirmation in the Binance app before signing anything.`;
+  return (
+    <div className="card">
+      <h2>Punya Agentic Wallet? Daftar lewat agenmu</h2>
+      <p className="muted">
+        Agentic Wallet memang tidak bisa dihubungkan ke browser dApp pihak ketiga — di dalam aplikasi Binance,
+        browser dApp hanya menyambungkan <strong>Web3 Wallet</strong> kamu, bukan Agentic Wallet (terverifikasi
+        pada uji D0-2 kami). Karena itu AgentShield menyediakan jalur agen: agenmu memanggil dua fungsi registry
+        yang sederhana langsung ke kontrak, dan setiap transaksi tetap kamu konfirmasi sendiri di aplikasi Binance.
+        Salin prompt ini ke agenmu (Binance AI Pro, atau agen berkemampuan Binance Agentic Wallet lainnya):
+      </p>
+      <pre>{prompt}</pre>
+      <button
+        onClick={() => {
+          navigator.clipboard?.writeText(prompt).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+          });
+        }}
+      >
+        {copied ? "Tersalin ✓" : "Salin prompt agen"}
+      </button>
+      <p className="small muted" style={{ marginBottom: 0 }}>
+        Ganti &lt;MY_NAME&gt; dengan nama Agent ID-mu{net.agentIdIsMock ? " dan <MY_ADDRESS> dengan alamat wallet-mu" : ""}.
+        Angka 7 pada setPolicy berarti ketiga aturan keamanan aktif; batas nilai contoh 0,1 BNB — sesuaikan dengan
+        kebijakanmu. Check-in bisa diulang maksimal 1× per 20 jam untuk menjaga streak.
+      </p>
+    </div>
+  );
+}
+
 // ── pages ──────────────────────────────────────────────────────────────────
 function HomePage(props: { net: (typeof NETWORKS)[NetworkKey]; goDashboard: () => void }) {
   const { net } = props;
@@ -212,7 +255,7 @@ function HomePage(props: { net: (typeof NETWORKS)[NetworkKey]; goDashboard: () =
           <h2>Daftarkan Agent ID-mu</h2>
           {!isConnected && (
             <>
-              <p className="muted">Hubungkan wallet yang memegang Agent ID-mu. Di aplikasi Binance Wallet, buka halaman ini dari browser dApp di dalam aplikasi; di browser biasa, gunakan wallet injected (MetaMask/Rabby/dll) atau WalletConnect. Situs ini <strong>tidak</strong> menyediakan login QR / kode pairing Agentic Wallet.</p>
+              <p className="muted">Hubungkan wallet yang memegang Agent ID-mu — di browser biasa gunakan wallet injected (MetaMask/Rabby/dll) atau WalletConnect. Catatan: browser dApp di aplikasi Binance hanya menyambungkan <strong>Web3 Wallet</strong>, bukan Agentic Wallet; holder Agentic Wallet memakai <strong>jalur agen</strong> pada kartu di bawah. Situs ini <strong>tidak</strong> menyediakan login QR / kode pairing Agentic Wallet.</p>
               <div className="row">
                 {connectors.map((c) => (
                   <button key={c.uid} className="primary" onClick={() => connect({ connector: c, chainId: net.chain.id })}>
@@ -252,7 +295,7 @@ function HomePage(props: { net: (typeof NETWORKS)[NetworkKey]; goDashboard: () =
                 </div>
               )}
               {!hasAgentId && !net.agentIdIsMock && (
-                <p className="bad">Wallet ini tidak memegang Agent ID di BNB Chain, jadi belum bisa mendaftar. Agent ID hanya bisa diklaim di dalam aplikasi Binance (Wallet → banner Agent ID).</p>
+                <p className="bad">Wallet ini tidak memegang Agent ID di BNB Chain, jadi belum bisa mendaftar lewat browser. Bila kamu membuka halaman ini dari aplikasi Binance, alamat yang tersambung ini adalah <strong>Web3 Wallet</strong>-mu — Agentic Wallet (pemegang Agent ID) tidak terekspos ke browser dApp. Gunakan <strong>jalur agen</strong> pada kartu di bawah untuk mendaftar dengan Agentic Wallet-mu. Agent ID sendiri hanya bisa diklaim di dalam aplikasi Binance (Wallet → banner Agent ID).</p>
               )}
               {hasAgentId && policy?.exists && (
                 <p className="ok">Wallet ini sudah terdaftar ✓ — ubah kebijakan atau check-in dari halaman Dashboard.</p>
@@ -268,6 +311,8 @@ function HomePage(props: { net: (typeof NETWORKS)[NetworkKey]; goDashboard: () =
           )}
         </div>
       )}
+
+      {net.registry && <AgentPathCard net={net} />}
 
       <div className="grid2">
         <div className="card">
@@ -419,6 +464,26 @@ const score = await client.readContract({
         <pre>{soliditySnippet}</pre>
         <h3>Contoh (TypeScript / viem)</h3>
         <pre>{tsSnippet}</pre>
+      </div>
+      <div className="card">
+        <h2>Jalur agen (Agentic Wallet)</h2>
+        <p className="muted">
+          Holder Agent ID memegang ID-nya di Agentic Wallet, yang tidak terekspos ke browser dApp pihak ketiga
+          (browser dApp Binance hanya menyuntikkan Web3 Wallet — temuan uji D0-2 kami, 21 Nov 2026). Karena itu
+          interaksi utama AgentShield dirancang ramah-agen: agen user memanggil dua fungsi tulis registry secara
+          langsung, dan user mengonfirmasi setiap transaksi di aplikasi Binance seperti biasa.
+        </p>
+        <pre>{`// Fungsi tulis (keduanya value-0, tanpa approval token):
+function setPolicy(uint8 flags, uint256 maxTxValueWei, uint256 agentTokenId)
+function checkIn()
+
+// tokenId diturunkan dari nama Agent ID dan diverifikasi on-chain:
+//   agentTokenId = uint256(keccak256("<nama tanpa .ai>"))
+//   kontrak memeriksa balanceOf(msg.sender) > 0 dan
+//   ownerOf(agentTokenId) == msg.sender pada kontrak Agent ID resmi.`}</pre>
+        <p className="muted" style={{ marginBottom: 0 }}>
+          Prompt siap salin untuk agen tersedia di Beranda pada kartu “Daftar lewat agenmu”.
+        </p>
       </div>
       <div className="card">
         <h2>Shield Score & izin owner — diungkap terbuka</h2>
