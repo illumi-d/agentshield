@@ -2,6 +2,8 @@
 
 Static site (Vite + React + wagmi/viem). No backend, no session storage on any server.
 
+**Live (production, Vercel): https://agentshield-three-blush.vercel.app** — project `agentshield` under the owner's Vercel account; redeploy with `npx vercel --prod` from this folder.
+
 ## Run
 ```bash
 npm install
